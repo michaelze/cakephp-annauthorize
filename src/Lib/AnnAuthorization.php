@@ -42,6 +42,22 @@ class AnnAuthorization {
     const PREFIX_TABLE = 'Table';
 
     /**
+     * Holds the singleton instance of this class once getInstace() has been called for the first time.
+     * @var AnnAuthorization
+     */
+    private static $instance;
+
+    /**
+     * Returns the singleton instance of the AnnAuthorization class.
+     */
+    public static function getInstance() {
+        if (static::$instance == null) {
+            static::$instance = new AnnAuthorization();
+        }
+        return static::$instance;
+    }
+
+    /**
      * Performs authorization for user with the provided id against the specified controller action using the @auth annotations on the respective
      * method.
      * @param string $userId
@@ -207,5 +223,11 @@ class AnnAuthorization {
      */
     protected function getRuleMethodName($ruleName) {
         return sprintf('%sRule', $ruleName);
+    }
+
+    /**
+     * Private constructor to prevent additional instances being created.
+     */
+    private function __construct() {
     }
 }

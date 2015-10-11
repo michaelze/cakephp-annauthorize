@@ -24,7 +24,7 @@ class AnnAuthorizeHelper extends Helper
      */
     public function link($title, $url = null, array $options = []) {
         $parsedRoute = Router::parse(Router::url($url !== null ? $url : $title));
-        $annAuthorization = new AnnAuthorization();
+        $annAuthorization = AnnAuthorization::getInstance();
         $userId = $this->request->session()->read('Auth.User.id');
         $requestAuthorized = $annAuthorization->authorizeRequest($userId, $parsedRoute['controller'], $parsedRoute['action'], $parsedRoute['pass']);
         if($requestAuthorized) {

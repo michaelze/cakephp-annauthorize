@@ -31,7 +31,7 @@ class AnnAuthorizationTest extends TestCase
 
     public function setUp() {
         $this->controller = new AnnAuthorizeTestController();
-        $this->AnnAuthorization = new AnnAuthorization();
+        $this->AnnAuthorization = AnnAuthorization::getInstance();
     }
 
     public function testAuthorizeRequestAllowed() {
