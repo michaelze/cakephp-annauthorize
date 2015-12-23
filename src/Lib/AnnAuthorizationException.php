@@ -8,7 +8,7 @@ use Cake\Core\Exception\Exception;
  */
 class AnnAuthorizationException extends Exception {
     public function __construct($message = null, $previous = null) {
-        if($message == null) {
+        if ($message == null) {
             $message = 'AnnAuthorization error';
         }
         parent::__construct($message, 500, $previous);

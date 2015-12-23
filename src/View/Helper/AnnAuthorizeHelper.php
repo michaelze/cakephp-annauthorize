@@ -29,7 +29,7 @@ class AnnAuthorizeHelper extends Helper
         $action = $parsedRoute['action'];
         $pass = $parsedRoute['pass'];
         $requestAuthorized = $annAuthorization->authorizeRequest($userId, $controller, $action, $pass, $this->request);
-        if($requestAuthorized) {
+        if ($requestAuthorized) {
             return $this->Html->link($title, $url, $options);
         }
         return false;

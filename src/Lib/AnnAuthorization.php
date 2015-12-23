@@ -91,25 +91,25 @@ class AnnAuthorization {
      */
     public function authorizeRequest($userId, $controller, $action, array $pass, Request $request) {
         $authRules = $this->parseAuthAnnotation($controller, $action);
-        foreach($authRules as $authRule => $ruleParams) {
+        foreach ($authRules as $authRule => $ruleParams) {
             $ruleComponents = explode('.', $authRule);
             $rulePrefix = $ruleComponents[0];
             $callback = [];
-            if($rulePrefix == self::RULE_ALLOWED) {
+            if ($rulePrefix == self::RULE_ALLOWED) {
                 return true;
-            } elseif($rulePrefix == self::RULE_LOGGEDIN) {
+            } elseif ($rulePrefix == self::RULE_LOGGEDIN) {
                 return $userId != null;
-            } elseif($rulePrefix == self::PREFIX_USER) {
-                if($userId == null) {
+            } elseif ($rulePrefix == self::PREFIX_USER) {
+                if ($userId == null) {
                     continue;
                 }
                 $ruleName = $ruleComponents[1];
                 $user = TableRegistry::get('Users')->get($userId);
                 $callback = [$user, $this->getRuleMethodName($ruleName)];
             }
-            elseif($rulePrefix == self::PREFIX_CONTROLLER) {
+            elseif ($rulePrefix == self::PREFIX_CONTROLLER) {
                 $ruleName = $ruleComponents[1];
-                if(is_object($controller)) {
+                if (is_object($controller)) {
                     $controllerObject = $controller;
                 } else {
                     $controllerName = $this->getControllerName($controller);
@@ -122,11 +122,11 @@ class AnnAuthorization {
                     $controllerObject = $controllerClass->newInstance();
                 }
                 $callback = [$controllerObject, $this->getRuleMethodName($ruleName)];
-            } elseif($rulePrefix == self::PREFIX_TABLE) {
+            } elseif ($rulePrefix == self::PREFIX_TABLE) {
                 $tableName = $ruleComponents[1];
                 $ruleName = $ruleComponents[2];
                 $table = TableRegistry::get($tableName);
-                if($table == null) {
+                if ($table == null) {
                     throw new AnnAuthorizationException(sprintf('Table "%s" not found while trying to apply auth rule "%s" for %s::%s.', $tableName,
                             $authRule, $this->getControllerName($controller, true), $action));
                 }
@@ -135,15 +135,15 @@ class AnnAuthorization {
                 throw new AnnAuthorizationException(sprintf('Invalid rule prefix "%s" encountered while trying to apply auth rule "%s" for %s::%s.',
                         $rulePrefix, $authRule, $this->getControllerName($controller, true), $action));
             }
-            if(!method_exists($callback[0], $callback[1])) {
+            if (!method_exists($callback[0], $callback[1])) {
                 throw new AnnAuthorizationException(sprintf('Method "%s" not found on "%s" while trying to apply auth rule "%s" for %s::%s.',
                         $callback[1], get_class($callback[0]), $authRule, $controller->name, $action));
             }
             $callbackParams = [$userId];
-            foreach($ruleParams as $ruleParam) {
+            foreach ($ruleParams as $ruleParam) {
                 $callbackParams[] = $this->getParam($ruleParam, $pass, $request);
             }
-            if(call_user_func_array($callback, $callbackParams)) {
+            if (call_user_func_array($callback, $callbackParams)) {
                 return true;
             }
         }
@@ -161,9 +161,9 @@ class AnnAuthorization {
         $controllerClass = new \ReflectionClass($controller);
         $actionMethods = $controllerClass->getMethods(\ReflectionMethod::IS_PUBLIC);
         $allowedActions = [];
-        foreach($actionMethods as $actionMethod) {
+        foreach ($actionMethods as $actionMethod) {
             $actionMethodComment = $actionMethod->getDocComment();
-            if(preg_match('/@auth:' . self::RULE_ALLOWED . '\(\)/', $actionMethodComment)) {
+            if (preg_match('/@auth:' . self::RULE_ALLOWED . '\(\)/', $actionMethodComment)) {
                 $allowedActions[] = $actionMethod->getName();
             }
         }
@@ -186,7 +186,7 @@ class AnnAuthorization {
      *         ]
      */
     protected function parseAuthAnnotation($controller, $action) {
-        if(is_object($controller)) {
+        if (is_object($controller)) {
             $actionMethod = new \ReflectionMethod($controller, $action);
         } else {
             $controllerName = Inflector::camelize($controller);
@@ -201,7 +201,7 @@ class AnnAuthorization {
         $methodComment = $actionMethod->getDocComment();
         $ruleCount = preg_match_all('/@auth:([a-z\.]+)\(([^\)]*)\)/i', $methodComment, $matches);
         $authRules = [];
-        for($i = 0; $i < $ruleCount; $i++) {
+        for ($i = 0; $i < $ruleCount; $i++) {
             $ruleName = $matches[1][$i];
             $authRules[$ruleName] = preg_split('/\s*,\s*/', $matches[2][$i]);
         }
@@ -218,12 +218,12 @@ class AnnAuthorization {
      *         Returns the controller's camel cased name of the provided controller.
      */
     protected function getControllerName($controller, $addSuffix = false) {
-        if(is_object($controller)) {
+        if (is_object($controller)) {
             $controllerName = $controller->name;
         } else {
             $controllerName = Inflector::camelize($controller);
         }
-        if($addSuffix) {
+        if ($addSuffix) {
             $controllerName = sprintf('%sController', $controllerName);
         }
         return $controllerName;
