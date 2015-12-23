@@ -8,9 +8,8 @@ use AnnAuthorize\Lib\AnnAuthorization;
 
 /**
  * Helper class that provides AnnAuthorization specific functionality.
- * 
+ *
  * @property    Cake\View\Helper\HtmlHelper       $Html
- * @property    Cake\View\Helper\SessionHelper    $Session
  */
 class AnnAuthorizeHelper extends Helper
 {
@@ -26,7 +25,10 @@ class AnnAuthorizeHelper extends Helper
         $parsedRoute = Router::parse(Router::url($url !== null ? $url : $title));
         $annAuthorization = AnnAuthorization::getInstance();
         $userId = $this->request->session()->read('Auth.User.id');
-        $requestAuthorized = $annAuthorization->authorizeRequest($userId, $parsedRoute['controller'], $parsedRoute['action'], $parsedRoute['pass']);
+        $controller = $parsedRoute['controller'];
+        $action = $parsedRoute['action'];
+        $pass = $parsedRoute['pass'];
+        $requestAuthorized = $annAuthorization->authorizeRequest($userId, $controller, $action, $pass, $this->request);
         if($requestAuthorized) {
             return $this->Html->link($title, $url, $options);
         }

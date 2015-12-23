@@ -26,7 +26,7 @@ class AnnAuthorize extends BaseAuthorize {
         Log::debug(sprintf('Trying to authorize user %s for request %s/%s and parameters %s.',
                 $user['username'], $controller->name, $action, json_encode($pass)));
         $annAuthorization = AnnAuthorization::getInstance();
-        $authorized = $annAuthorization->authorizeRequest($user['id'], $controller, $action, $pass);
+        $authorized = $annAuthorization->authorizeRequest($user['id'], $controller, $action, $pass, $request);
         Log::debug(sprintf('Authorization %s', $authorized ? 'was successful.': 'failed.'));
         return $authorized;
     }

@@ -1,6 +1,7 @@
 <?php
 namespace AnnAuthorize\Test\View\Helper;
 
+use Cake\Network\Request;
 use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
@@ -20,6 +21,7 @@ class AnnAuthorizeHelperTest extends TestCase {
         Router::connect('/ann-authorize-test/allowedAction', ['controller' => 'AnnAuthorizeTest', 'action' => 'allowedAction']);
         Router::connect('/ann-authorize-test/loggedInAction', ['controller' => 'AnnAuthorizeTest', 'action' => 'loggedInAction']);
         $this->annAuthorizeHelper = new AnnAuthorizeHelper(new View());
+        $this->annAuthorizeHelper->request = new Request();
     }
 
     public function testAllowedActionLinkIsCreated() {

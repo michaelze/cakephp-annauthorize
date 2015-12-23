@@ -3,6 +3,7 @@ namespace AnnAuthorize\Lib;
 
 use Cake\Controller\Controller;
 use Cake\Core\App;
+use Cake\Network\Request;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 
@@ -42,6 +43,18 @@ class AnnAuthorization {
     const PREFIX_TABLE = 'Table';
 
     /**
+     * The param name for providing 'pass' array elements to a rule method.
+     * @var string
+     */
+    const PARAM_TYPE_PASS = 'pass';
+
+    /**
+     * The param name for providing request params to a rule method.
+     * @var string
+     */
+    const PARAM_TYPE_REQ = 'req';
+
+    /**
      * Holds the singleton instance of this class once getInstace() has been called for the first time.
      * @var AnnAuthorization
      */
@@ -68,13 +81,15 @@ class AnnAuthorization {
      *         The accessed action's name.
      * @param array $pass
      *         All the parameters passed to the action.
+     * @param Request $request
+     *         The request object representing the current request.
      * @return boolean
      *         Returns true, if authorization was successful, false otherwise.
      * @throws AnnAuthorizationException
      *         Throws this exception, when a table class required by a rule does not exist, when a rule method does not exists or when an unknown rule
      *         prefix is encountered.
      */
-    public function authorizeRequest($userId, $controller, $action, array $pass) {
+    public function authorizeRequest($userId, $controller, $action, array $pass, Request $request) {
         $authRules = $this->parseAuthAnnotation($controller, $action);
         foreach($authRules as $authRule => $ruleParams) {
             $ruleComponents = explode('.', $authRule);
@@ -126,7 +141,7 @@ class AnnAuthorization {
             }
             $callbackParams = [$userId];
             foreach($ruleParams as $ruleParam) {
-                $callbackParams[] = preg_match('/#arg-(\d+)/', $ruleParam, $matches) ? $pass[$matches[1]] : $ruleParam;
+                $callbackParams[] = $this->getParam($ruleParam, $pass, $request);
             }
             if(call_user_func_array($callback, $callbackParams)) {
                 return true;
@@ -223,6 +238,40 @@ class AnnAuthorization {
      */
     protected function getRuleMethodName($ruleName) {
         return sprintf('%sRule', $ruleName);
+    }
+
+    /**
+     * This method parses the provided rule param string and returns the appropriate value to be passed to the rule method.
+     * @param string $ruleParam
+     *          The rule param as parsed by the parseAuthAnnotation method.
+     * @param array $pass
+     *          The pass array from the parsed url.
+     * @param Request $request
+     *          The request object representing the current request.
+     * @return mixed
+     *          Returns the value corresponding to the provided $ruleParam.
+     * @throws AnnAuthorizationException
+     *          Throws this exception if the $pass or $request parameter designated by the $ruleParam does not exist.
+     */
+    protected function getParam($ruleParam, array $pass, Request $request) {
+        $ruleMatched = preg_match('/(' . self::PARAM_TYPE_PASS . '|' . self::PARAM_TYPE_REQ . ')\[([^\]]+)\]/', $ruleParam, $matches);
+        if (!$ruleMatched) {
+            return $ruleParam;
+        }
+        $type = $matches[1];
+        $index = $matches[2];
+        switch ($type) {
+            case self::PARAM_TYPE_PASS:
+                if (!array_key_exists($index, $pass)) {
+                    throw new AnnAuthorizationException();
+                }
+                return $pass[$index];
+            case self::PARAM_TYPE_REQ:
+                if (!array_key_exists($index, $request->params)) {
+                    throw new AnnAuthorizationException();
+                }
+                return $request->param($index);
+        }
     }
 
     /**
