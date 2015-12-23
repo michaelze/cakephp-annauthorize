@@ -125,11 +125,11 @@ class AnnAuthorization {
             } elseif($rulePrefix == self::PREFIX_TABLE) {
                 $tableName = $ruleComponents[1];
                 $ruleName = $ruleComponents[2];
-                if(!TableRegistry::exists($tableName)) {
+                $table = TableRegistry::get($tableName);
+                if($table == null) {
                     throw new AnnAuthorizationException(sprintf('Table "%s" not found while trying to apply auth rule "%s" for %s::%s.', $tableName,
                             $authRule, $this->getControllerName($controller, true), $action));
                 }
-                $table = TableRegistry::get($tableName);
                 $callback = [$table, $this->getRuleMethodName($ruleName)];
             } else {
                 throw new AnnAuthorizationException(sprintf('Invalid rule prefix "%s" encountered while trying to apply auth rule "%s" for %s::%s.',

@@ -65,12 +65,10 @@ class AnnAuthorizationTest extends TestCase
     }
 
     public function testAuthorizeRequestDeniedTableRule() {
-        TableRegistry::set('UsersTable', new UsersTable());
         $this->assertFalse($this->AnnAuthorization->authorizeRequest(UsersFixture::DEFAULT_USER_ID, $this->controller, 'tableRuleAction', [], new Request()));
     }
 
     public function testAuthorizeRequestAllowedTableRule() {
-        TableRegistry::set('UsersTable', new UsersTable());
         $this->assertTrue($this->AnnAuthorization->authorizeRequest(UsersTable::SUPERADMIN_ID, $this->controller, 'tableRuleAction', [], new Request()));
     }
 

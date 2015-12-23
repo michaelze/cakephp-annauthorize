@@ -26,7 +26,7 @@ class AnnAuthorizeTestController extends Controller {
      */
     public function controllerRuleAction() {}
     /**
-     * @auth:Table.UsersTable.test()
+     * @auth:Table.Users.test()
      */
     public function tableRuleAction() {}
     /**
