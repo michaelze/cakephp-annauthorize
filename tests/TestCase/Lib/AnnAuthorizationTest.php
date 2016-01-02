@@ -2,7 +2,6 @@
 namespace AnnAuthorize\Test\Lib;
 
 use Cake\Network\Request;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 use AnnAuthorize\Lib\AnnAuthorization;
@@ -112,6 +111,10 @@ class AnnAuthorizationTest extends TestCase
         $this->assertTrue($this->AnnAuthorization->authorizeRequest(UsersTable::SUPERADMIN_ID, $this->controller, 'ruleWithReqAction', ['test1', 'test2'], $request));
         $this->assertTrue($this->AnnAuthorization->authorizeRequest(UsersTable::SUPERADMIN_ID, $this->controller, 'ruleWithReqsAction', ['test1', 'test2'], $request));
         $this->assertTrue($this->AnnAuthorization->authorizeRequest(UsersTable::SUPERADMIN_ID, $this->controller, 'ruleWithMixedParamsAction', ['test1', 'test2'], $request));
+    }
+
+    public function testSameRuleMultipleTimesAction() {
+        $this->assertTrue($this->AnnAuthorization->authorizeRequest(UsersTable::SUPERADMIN_ID, $this->controller, 'sameRuleMultipleTimesAction', ['test2'], new Request()));
     }
 
     /**

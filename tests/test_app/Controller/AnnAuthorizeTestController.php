@@ -46,6 +46,11 @@ class AnnAuthorizeTestController extends Controller {
      */
     public function ruleWithParamAction($id) {}
     /**
+     * @auth:Controller.ruleWithParam(pass[0])
+     * @auth:Controller.ruleWithParam(test1)
+     */
+    public function sameRuleMultipleTimesAction($id) {}
+    /**
      * @auth:Controller.ruleWithParams(pass[0], pass[1])
      */
     public function ruleWithParamsAction($id, $test) {}

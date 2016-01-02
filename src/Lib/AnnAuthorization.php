@@ -91,8 +91,8 @@ class AnnAuthorization {
      */
     public function authorizeRequest($userId, $controller, $action, array $pass, Request $request) {
         $authRules = $this->parseAuthAnnotation($controller, $action);
-        foreach ($authRules as $authRule => $ruleParams) {
-            $ruleComponents = explode('.', $authRule);
+        foreach ($authRules as $authRule) {
+            $ruleComponents = explode('.', $authRule['name']);
             $rulePrefix = $ruleComponents[0];
             $callback = [];
             if ($rulePrefix == self::RULE_ALLOWED) {
@@ -128,19 +128,19 @@ class AnnAuthorization {
                 $table = TableRegistry::get($tableName);
                 if ($table == null) {
                     throw new AnnAuthorizationException(sprintf('Table "%s" not found while trying to apply auth rule "%s" for %s::%s.', $tableName,
-                            $authRule, $this->getControllerName($controller, true), $action));
+                            $authRule['name'], $this->getControllerName($controller, true), $action));
                 }
                 $callback = [$table, $this->getRuleMethodName($ruleName)];
             } else {
                 throw new AnnAuthorizationException(sprintf('Invalid rule prefix "%s" encountered while trying to apply auth rule "%s" for %s::%s.',
-                        $rulePrefix, $authRule, $this->getControllerName($controller, true), $action));
+                        $rulePrefix, $authRule['name'], $this->getControllerName($controller, true), $action));
             }
             if (!method_exists($callback[0], $callback[1])) {
                 throw new AnnAuthorizationException(sprintf('Method "%s" not found on "%s" while trying to apply auth rule "%s" for %s::%s.',
-                        $callback[1], get_class($callback[0]), $authRule, $controller->name, $action));
+                        $callback[1], get_class($callback[0]), $authRule['name'], $controller->name, $action));
             }
             $callbackParams = [$userId];
-            foreach ($ruleParams as $ruleParam) {
+            foreach ($authRule['args'] as $ruleParam) {
                 $callbackParams[] = $this->getParam($ruleParam, $pass, $request);
             }
             if (call_user_func_array($callback, $callbackParams)) {
@@ -203,7 +203,10 @@ class AnnAuthorization {
         $authRules = [];
         for ($i = 0; $i < $ruleCount; $i++) {
             $ruleName = $matches[1][$i];
-            $authRules[$ruleName] = preg_split('/\s*,\s*/', $matches[2][$i]);
+            $authRules[] = [
+                'name' => $ruleName,
+                'args' => preg_split('/\s*,\s*/', $matches[2][$i])
+            ];
         }
         return $authRules;
     }
