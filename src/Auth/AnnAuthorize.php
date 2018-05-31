@@ -1,11 +1,10 @@
 <?php
 namespace AnnAuthorize\Auth;
 
-use Cake\Auth\BaseAuthorize;
-use Cake\Log\Log;
-use Cake\Network\Request;
-
 use AnnAuthorize\Lib\AnnAuthorization;
+use Cake\Auth\BaseAuthorize;
+use Cake\Http\ServerRequest;
+use Cake\Log\Log;
 
 /**
  * Authorize implementation that handles authorization based on special comments on each controller method.
@@ -16,10 +15,10 @@ class AnnAuthorize extends BaseAuthorize {
      * Hands authorization over to the AnnAuthorize class.
      * @param array $user
      *         An array containing information about the user to authorize.
-     * @param Request $request
+     * @param ServerRequest $request
      *         Describes the request to authorize.
      */
-    public function authorize($user, Request $request) {
+    public function authorize($user, ServerRequest $request) {
         $controller = $this->_registry->getController();
         $action = $request->param('action');
         $pass = $request->param('pass');
