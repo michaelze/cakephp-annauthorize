@@ -3,7 +3,7 @@ namespace AnnAuthorize\Lib;
 
 use Cake\Controller\Controller;
 use Cake\Core\App;
-use Cake\Network\Request;
+use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 
@@ -81,7 +81,7 @@ class AnnAuthorization {
      *         The accessed action's name.
      * @param array $pass
      *         All the parameters passed to the action.
-     * @param Request $request
+     * @param ServerRequest $request
      *         The request object representing the current request.
      * @return boolean
      *         Returns true, if authorization was successful, false otherwise.
@@ -89,7 +89,7 @@ class AnnAuthorization {
      *         Throws this exception, when a table class required by a rule does not exist, when a rule method does not exists or when an unknown rule
      *         prefix is encountered.
      */
-    public function authorizeRequest($userId, $controller, $action, array $pass, Request $request) {
+    public function authorizeRequest($userId, $controller, $action, array $pass, ServerRequest $request) {
         $authRules = $this->parseAuthAnnotation($controller, $action);
         foreach ($authRules as $authRule) {
             $ruleComponents = explode('.', $authRule['name']);
@@ -253,14 +253,14 @@ class AnnAuthorization {
      *          The rule param as parsed by the parseAuthAnnotation method.
      * @param array $pass
      *          The pass array from the parsed url.
-     * @param Request $request
+     * @param ServerRequest $request
      *          The request object representing the current request.
      * @return mixed
      *          Returns the value corresponding to the provided $ruleParam.
      * @throws AnnAuthorizationException
      *          Throws this exception if the $pass or $request parameter designated by the $ruleParam does not exist.
      */
-    protected function getParam($ruleParam, array $pass, Request $request) {
+    protected function getParam($ruleParam, array $pass, ServerRequest $request) {
         $ruleMatched = preg_match('/(' . self::PARAM_TYPE_PASS . '|' . self::PARAM_TYPE_REQ . ')\[([^\]]+)\]/', $ruleParam, $matches);
         if (!$ruleMatched) {
             return $ruleParam;

@@ -1,13 +1,12 @@
 <?php
 namespace AnnAuthorize\Test\View\Helper;
 
-use Cake\Network\Request;
+use AnnAuthorize\Test\Fixture\UsersFixture;
+use AnnAuthorize\View\Helper\AnnAuthorizeHelper;
+use Cake\Http\ServerRequest;
 use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
-
-use AnnAuthorize\Test\Fixture\UsersFixture;
-use AnnAuthorize\View\Helper\AnnAuthorizeHelper;
 
 /**
  * Test class for the AnnAuthorizeHelper.
@@ -18,10 +17,11 @@ class AnnAuthorizeHelperTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
+        Router::reload();
         Router::connect('/ann-authorize-test/allowedAction', ['controller' => 'AnnAuthorizeTest', 'action' => 'allowedAction']);
         Router::connect('/ann-authorize-test/loggedInAction', ['controller' => 'AnnAuthorizeTest', 'action' => 'loggedInAction']);
         $this->annAuthorizeHelper = new AnnAuthorizeHelper(new View());
-        $this->annAuthorizeHelper->request = new Request();
+        $this->annAuthorizeHelper->request = new ServerRequest();
     }
 
     public function testAllowedActionLinkIsCreated() {
@@ -47,13 +47,13 @@ class AnnAuthorizeHelperTest extends TestCase {
      * Creates a request mock whose session will simulate the user with the provided id being logged in.
      * @param string $userId
      *          Provide the id of the user that is currently logged in, or null if no user is logged in at the moment.
-     * @return \Cake\Network\Request Returns the mocked request.
+     * @return ServerRequest Returns the mocked request.
      */
-    private function getRequestMock($userId) {
+    private function getRequestMock($userId) : ServerRequest {
         $sessionMock = $this->getMockBuilder('Cake\Network\Session')->setMethods(['read'])->getMock();
-        $requestMock = $this->getMockBuilder('Cake\Network\Request')->setMethods(['session'])->getMock();
+        $requestMock = $this->getMockBuilder('Cake\Http\ServerRequest')->setMethods(['getSession'])->getMock();
         $sessionMock->expects($this->any())->method('read')->with($this->equalTo('Auth.User.id'))->will($this->returnValue($userId));
-        $requestMock->expects($this->any())->method('session')->will($this->returnValue($sessionMock));
+        $requestMock->expects($this->any())->method('getSession')->will($this->returnValue($sessionMock));
         return $requestMock;
     }
 }
