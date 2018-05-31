@@ -96,13 +96,17 @@ class AnnAuthorization {
             $rulePrefix = $ruleComponents[0];
             $callback = [];
             if ($rulePrefix == self::RULE_ALLOWED) {
+                // authorize the request as soon as we encounter the 'allowed' rule.
                 return true;
-            } elseif ($rulePrefix == self::RULE_LOGGEDIN) {
-                return $userId != null;
-            } elseif ($rulePrefix == self::PREFIX_USER) {
-                if ($userId == null) {
-                    continue;
-                }
+            }
+            if($userId == null) {
+                // any further rule checking (after allowed) requires a user so if we don't have a userId skip this rule.
+                continue;
+            }
+            if ($rulePrefix == self::RULE_LOGGEDIN) {
+                // as we are sure at this point that we have a user id, we can authorize any request with the 'loggedIn' rule.
+                return true;
+            } elseif($rulePrefix == self::PREFIX_USER) {
                 $ruleName = $ruleComponents[1];
                 $user = TableRegistry::get('Users')->get($userId);
                 $callback = [$user, $this->getRuleMethodName($ruleName)];

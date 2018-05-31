@@ -51,6 +51,10 @@ class AnnAuthorizationTest extends TestCase
         $this->assertFalse($this->AnnAuthorization->authorizeRequest(UsersFixture::DEFAULT_USER_ID, $this->controller, 'userRuleAction', [], new Request()));
     }
 
+    public function testAuthorizeRequestDeniedUserRuleNotLoggedIn() {
+        $this->assertFalse($this->AnnAuthorization->authorizeRequest(null, $this->controller, 'userRuleAction', [], new Request()));
+    }
+
     public function testAuthorizeRequestAllowedUserRule() {
         $this->assertTrue($this->AnnAuthorization->authorizeRequest(UsersTable::SUPERADMIN_ID, $this->controller, 'userRuleAction', [], new Request()));
     }
@@ -65,6 +69,10 @@ class AnnAuthorizationTest extends TestCase
 
     public function testAuthorizeRequestDeniedTableRule() {
         $this->assertFalse($this->AnnAuthorization->authorizeRequest(UsersFixture::DEFAULT_USER_ID, $this->controller, 'tableRuleAction', [], new Request()));
+    }
+
+    public function testAuthorizeRequestDeniedTableRuleNotLoggedIn() {
+        $this->assertFalse($this->AnnAuthorization->authorizeRequest(null, $this->controller, 'tableRuleAction', [], new Request()));
     }
 
     public function testAuthorizeRequestAllowedTableRule() {

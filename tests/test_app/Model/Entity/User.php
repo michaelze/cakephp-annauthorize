@@ -7,7 +7,7 @@ use TestApp\Model\Table\UsersTable;
 
 class User extends Entity {
 
-    public function superadminRule($userId) {
+    public function superadminRule(string $userId) {
         return $userId == UsersTable::SUPERADMIN_ID;
     }
 

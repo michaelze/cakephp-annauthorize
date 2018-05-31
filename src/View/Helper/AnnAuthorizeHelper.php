@@ -18,7 +18,7 @@ class AnnAuthorizeHelper extends Helper
     /**
      * This method provides conditional output of the desired link only if the current user has access to the controller action referenced by the
      * link.
-     * @return Returns the constructed link if the current user has access to the controller action referenced by the link or false, if not.
+     * @return string Returns the constructed link if the current user has access to the controller action referenced by the link or false, if not.
      * @see \Cake\View\Helper\HtmlHelper::link() for additional information on the parameters.
      */
     public function link($title, $url = null, array $options = []) {
