@@ -11,7 +11,7 @@
     "homepage": "https://github.com/michaelze/cakephp-annauthorize",
     "require": {
         "php": ">=7.",
-        "cakephp/cakephp": "3.5.*"
+        "cakephp/cakephp": "~3.5"
     },
     "require-dev": {
         "phpunit/phpunit": "6"
