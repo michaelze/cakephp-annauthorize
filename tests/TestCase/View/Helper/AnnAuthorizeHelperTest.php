@@ -43,6 +43,18 @@ class AnnAuthorizeHelperTest extends TestCase {
         $this->assertFalse($link);
     }
 
+    public function testNotAllowedActionReturnsTitleWithRespectiveOptionTrue() {
+        $this->annAuthorizeHelper->request = $this->getRequestMock(null);
+        $link = $this->annAuthorizeHelper->link('some title', ['controller' => 'AnnAuthorizeTest', 'action' => 'loggedInAction'], ['fallbackToTitle' => true]);
+        $this->assertEquals('some title', $link);
+    }
+
+    public function testNotAllowedActionReturnsFalseWithRespectiveOptionFalse() {
+        $this->annAuthorizeHelper->request = $this->getRequestMock(null);
+        $link = $this->annAuthorizeHelper->link('some title', ['controller' => 'AnnAuthorizeTest', 'action' => 'loggedInAction'], ['fallbackToTitle' => false]);
+        $this->assertFalse($link);
+    }
+
     /**
      * Creates a request mock whose session will simulate the user with the provided id being logged in.
      * @param string $userId

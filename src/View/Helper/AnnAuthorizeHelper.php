@@ -11,8 +11,7 @@ use AnnAuthorize\Lib\AnnAuthorization;
  *
  * @property    Cake\View\Helper\HtmlHelper       $Html
  */
-class AnnAuthorizeHelper extends Helper
-{
+class AnnAuthorizeHelper extends Helper {
     public $helpers = ['Html'];
 
     /**
@@ -31,6 +30,9 @@ class AnnAuthorizeHelper extends Helper
         $requestAuthorized = $annAuthorization->authorizeRequest($userId, $controller, $action, $pass, $this->request);
         if ($requestAuthorized) {
             return $this->Html->link($title, $url, $options);
+        }
+        if (array_key_exists('fallbackToTitle', $options) && $options['fallbackToTitle'] === true) {
+            return h($title);
         }
         return false;
     }
