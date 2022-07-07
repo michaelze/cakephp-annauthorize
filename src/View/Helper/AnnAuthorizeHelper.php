@@ -1,8 +1,11 @@
 <?php
 namespace AnnAuthorize\View\Helper;
 
-use Cake\View\Helper;
+use Cake\Http\ServerRequest;
 use Cake\Routing\Router;
+use Cake\View\Helper;
+
+use Laminas\Diactoros\Uri;
 
 use AnnAuthorize\Lib\AnnAuthorization;
 
@@ -21,13 +24,18 @@ class AnnAuthorizeHelper extends Helper {
      * @see \Cake\View\Helper\HtmlHelper::link() for additional information on the parameters.
      */
     public function link($title, $url = null, array $options = []) {
-        $parsedRoute = Router::parse(Router::url($url !== null ? $url : $title));
+        $linkRequest = (new ServerRequest())->withUri(new Uri(Router::url($url ?? $title)));
+        $parsedRoute = Router::parseRequest($linkRequest);
+
         $annAuthorization = AnnAuthorization::getInstance();
-        $userId = $this->request->getSession()->read('Auth.User.id');
+
+        $request = $this->getView()->getRequest();
+
+        $userId = $request->getSession()->read('Auth.User.id');
         $controller = $parsedRoute['controller'];
         $action = $parsedRoute['action'];
         $pass = $parsedRoute['pass'];
-        $requestAuthorized = $annAuthorization->authorizeRequest($userId, $controller, $action, $pass, $this->request);
+        $requestAuthorized = $annAuthorization->authorizeRequest($userId, $controller, $action, $pass, $request);
         if ($requestAuthorized) {
             return $this->Html->link($title, $url, $options);
         }

@@ -19,7 +19,7 @@ class AnnAuthorizeComponent extends Component {
      * @param array $config
      *         Additional configuration parameters.
      */
-    public function initialize(array $config = []) {
+    public function initialize(array $config = []): void {
         $annAuthorization = AnnAuthorization::getInstance();
         $allowedActions = $annAuthorization->getAllowedActions($this->_registry->getController());
         $this->Auth->allow($allowedActions);
